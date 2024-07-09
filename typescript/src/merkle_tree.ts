@@ -1,28 +1,49 @@
+import { createHash } from "crypto";
 
-import { keccak256 } from 'ethereumjs-util';
+class MerkleTree {
+  private leaves: string[];
+  private layers: string[][];
 
-type Tree = {
+  constructor(leaves: string[]) {
+    this.leaves = leaves.map(this.hash);
+    this.layers = [];
+    this.buildTree();
+  }
 
-}
+  private hash(data: string): string {
+    return createHash("sha256").update(data).digest("hex");
+  }
 
-type Root = {
+  private buildTree(): void {
+    this.layers.push(this.leaves);
 
-}
+    while (this.layers[this.layers.length - 1].length > 1) {
+      const currentLayer = this.layers[this.layers.length - 1];
+      const nextLayer = [];
 
-type TreeNode = {
+      for (let i = 0; i < currentLayer.length; i += 2) {
+        if (i + 1 < currentLayer.length) {
+          nextLayer.push(this.hash(currentLayer[i] + currentLayer[i + 1]));
+        } else {
+          nextLayer.push(currentLayer[i]);
+        }
+      }
 
-}
-type Proof = typeof keccak256[] | typeof keccak256;
-
-
-class MerkleTree  {
-    constructor() { }
-
-    getRoot(): Root {
-        return 
+      this.layers.push(nextLayer);
     }
+  }
 
-  verify(proof: Proof, root: Root, node: TreeNode): boolean {
-    return true || false;
+  public getRoot(): string {
+    return this.layers[this.layers.length - 1][0];
+  }
+
+  public getProof(leaf: string): string[] {
+      return;
+  }
+
+  public verifyProof(leaf: string, proof: string[], root: string): boolean {
+    return;
   }
 }
+
+
